@@ -3,6 +3,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:max_notes/_servies/theme_services/w_custon_theme_builder.dart';
 import 'package:max_notes/modules/home_page/c_home_page.dart';
 import 'package:get/get.dart';
+import 'package:max_notes/modules/note_create/v_note_create.dart';
 
 import '../../_servies/data_controller.dart';
 
@@ -34,7 +35,9 @@ class HomePage extends StatelessWidget {
             ],
           ),
           floatingActionButton: FloatingActionButton(
-            onPressed: () {},
+            onPressed: () {
+              Get.to(() => const NoteCreatePage());
+            },
             backgroundColor: theme.secondary,
             child: Icon(
               Icons.add,
@@ -74,9 +77,9 @@ class HomePage extends StatelessWidget {
                 Expanded(
                   child: MasonryGridView.count(
                     crossAxisCount: 2, //colum count
-                    mainAxisSpacing: 5,
-                    crossAxisSpacing: 5,
-                    itemCount: 10, //item count
+                    mainAxisSpacing: 3,
+                    crossAxisSpacing: 3,
+                    itemCount: 9, //item count
                     itemBuilder: (context, index) {
                       return Tile(
                         index: index,
@@ -110,17 +113,32 @@ class Tile extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaxThemeBuilder(
       builder: (context, theme, themeController) {
-        return SizedBox(
-          height: extent,
-          child: Card(
+        return Card(
             color: theme.secondary,
-            child: Center(
-              child: Text(
-                customText ?? 'Tile $index' + '\nextent' + extent.toString(),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "My Note",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "Perfect Places " * index,
+                    // maxLines: 2,
+                    // overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        fontSize: 13, color: Color.fromARGB(255, 71, 70, 70)),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Yesterday 7:30 PM',
+                    style: TextStyle(fontSize: 12),
+                  )
+                ],
               ),
-            ),
-          ),
-        );
+            ));
       },
     );
   }
