@@ -7,6 +7,7 @@ class ThemeModel {
   Color background;
   Color background2;
   Color onBackground;
+  Color text1;
   ThemeModel({
     required this.primary,
     required this.primaryAccent,
@@ -14,5 +15,6 @@ class ThemeModel {
     required this.background,
     required this.background2,
     required this.onBackground,
+    required this.text1,
   });
 }

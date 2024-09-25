@@ -6,7 +6,7 @@ Color secondary = const Color(0XFFCAF477);
 Color background = const Color(0xFF151515);
 Color background2 = const Color(0xFF1A1A1A);
 Color onBackground = const Color(0xFF252525);
-
+Color text1 = const Color(0xFF252525);
 Color navi1 = const Color(0XFFEDB8A7);
 Color navi2 = const Color(0XFFA7EDED);
 Color navi3 = const Color(0XFFADA7ED);
@@ -21,5 +21,6 @@ class LightThemeData {
     background: background,
     background2: background2,
     onBackground: onBackground,
+    text1:text1
   );
 }
