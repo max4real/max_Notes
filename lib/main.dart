@@ -6,7 +6,7 @@ import 'package:max_notes/modules/home_page/v_home_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Future.delayed(const Duration(seconds: 1));
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {

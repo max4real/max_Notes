@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart';
 import 'package:max_notes/_servies/data_controller.dart';
 
@@ -9,6 +10,8 @@ class NoteCreateController extends GetxController {
   final UndoHistoryController undoController = UndoHistoryController();
 
   ValueNotifier<int> index_ = ValueNotifier(0);
+
+  final QuillController quillController = QuillController.basic();
 
   @override
   void onInit() {
@@ -29,5 +32,26 @@ class NoteCreateController extends GetxController {
     print('_____________________________');
     print(myDateFormat(createDate));
   }
-  
+
+  // Toggle Bold text
+  void toggleBold() {
+    var currentAttributes = quillController.getSelectionStyle().attributes;
+    if (currentAttributes.containsKey(Attribute.bold.key)) {
+      quillController.formatSelection(
+          Attribute.clone(Attribute.bold, null)); // Remove Bold
+    } else {
+      quillController.formatSelection(Attribute.bold); // Apply Bold
+    }
+  }
+
+  // Toggle Italic text
+  void toggleItalic() {
+    var currentAttributes = quillController.getSelectionStyle().attributes;
+    if (currentAttributes.containsKey(Attribute.italic.key)) {
+      quillController.formatSelection(
+          Attribute.clone(Attribute.italic, null)); // Remove Italic
+    } else {
+      quillController.formatSelection(Attribute.italic); // Apply Italic
+    }
+  }
 }
