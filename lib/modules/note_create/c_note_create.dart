@@ -1,17 +1,15 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter_quill/quill_delta.dart';
 import 'package:get/get.dart';
-import 'package:max_notes/_servies/data_controller.dart';
 
 class NoteCreateController extends GetxController {
   late DateTime createDate;
-  TextEditingController txtData = TextEditingController();
-  final FocusNode focusNode = FocusNode();
-  final UndoHistoryController undoController = UndoHistoryController();
+  ValueNotifier<QuillController> quillController =
+      ValueNotifier(QuillController.basic());
 
-  ValueNotifier<int> index_ = ValueNotifier(0);
-
-  final QuillController quillController = QuillController.basic();
+  String noteBody = "";
 
   @override
   void onInit() {
@@ -28,30 +26,30 @@ class NoteCreateController extends GetxController {
   void onClose() {
     // TODO: implement onClose
     super.onClose();
-    print("Data : " + txtData.text);
-    print('_____________________________');
-    print(myDateFormat(createDate));
   }
 
-  // Toggle Bold text
-  void toggleBold() {
-    var currentAttributes = quillController.getSelectionStyle().attributes;
-    if (currentAttributes.containsKey(Attribute.bold.key)) {
-      quillController.formatSelection(
-          Attribute.clone(Attribute.bold, null)); // Remove Bold
-    } else {
-      quillController.formatSelection(Attribute.bold); // Apply Bold
-    }
+  void storeContent() {
+    final delta = quillController.value.document.toDelta();
+    final jsonString = jsonEncode(delta.toJson());
+
+    noteBody = jsonString;
+
+    print('Stored Content: $noteBody');
   }
 
-  // Toggle Italic text
-  void toggleItalic() {
-    var currentAttributes = quillController.getSelectionStyle().attributes;
-    if (currentAttributes.containsKey(Attribute.italic.key)) {
-      quillController.formatSelection(
-          Attribute.clone(Attribute.italic, null)); // Remove Italic
+  void loadContent() {
+    if (noteBody.isNotEmpty) {
+      final deltaJson = jsonDecode(noteBody);
+      final delta = Delta.fromJson(deltaJson);
+
+      quillController.value = QuillController(
+        document: Document.fromDelta(delta), // Load document from Delta
+        selection: const TextSelection.collapsed(
+          offset: 0,
+        ), // Reset the cursor position
+      );
     } else {
-      quillController.formatSelection(Attribute.italic); // Apply Italic
+      print("No content stored.");
     }
   }
 }

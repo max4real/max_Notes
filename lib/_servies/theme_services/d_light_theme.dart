@@ -5,7 +5,10 @@ Color primary = const Color(0XFFF2F2F2);
 Color primaryAccent =const Color.fromARGB(255, 232, 231, 229);
 Color secondary = const Color(0XFFCAF477);
 Color background = const Color(0xFF151515);
-Color background2 = const Color(0xFF1A1A1A);
+
+// Color background2 = const Color(0xFF1A1A1A);
+Color background2 = const Color(0xFFEAE8D2);
+
 Color onBackground = const Color(0xFF252525);
 Color text1 = const Color(0xFF252525);
 Color navi1 = const Color(0XFFEDB8A7);
