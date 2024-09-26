@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:max_notes/_servies/api_endpoint.dart';
+
 import 'package:max_notes/models/m_text_body_model.dart';
 
 import '../../models/m_note_model.dart';
@@ -12,6 +13,7 @@ class HomePageController extends GetxController {
   TextEditingController txtSearchBar = TextEditingController(text: "");
   ValueNotifier<List<NoteModel>> noteList = ValueNotifier([]);
   ValueNotifier<bool> xFetching = ValueNotifier(false);
+  ValueNotifier<bool> themeSwitch = ValueNotifier(false);
   @override
   void onInit() {
     // TODO: implement onInit
@@ -39,6 +41,7 @@ class HomePageController extends GetxController {
           NoteModel data = NoteModel.fromApi(data: element);
           temp.add(data);
         }
+        temp.sort((a, b) => b.createDate.compareTo(a.createDate));
         noteList.value = temp;
       } else {
         String errMessage = response.body["_metadata"]["message"].toString();
@@ -64,14 +67,14 @@ class HomePageController extends GetxController {
     } catch (e) {}
   }
 
-  String getText(String data) {
+  List<TextBodyModel> getText(String data) {
     Iterable iterable = jsonDecode(data);
     List<TextBodyModel> temp = [];
     for (var element in iterable) {
       TextBodyModel rawData = TextBodyModel.fromJson(data: element);
       temp.add(rawData);
     }
-    return temp.first.text;
+    return temp;
   }
 
   String formatDate(DateTime rawDate) {

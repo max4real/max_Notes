@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:max_notes/_servies/theme_services/w_custon_theme_builder.dart';
 import 'package:max_notes/models/m_note_model.dart';
+import 'package:max_notes/models/m_text_body_model.dart';
 import 'package:max_notes/modules/home_page/c_home_page.dart';
 import 'package:get/get.dart';
 import 'package:max_notes/modules/note_create/v_note_create.dart';
@@ -27,14 +28,32 @@ class HomePage extends StatelessWidget {
             ),
             backgroundColor: theme.background2,
             actions: [
-              IconButton(
-                  onPressed: () {
-                    themeController.toggleTheme();
-                  },
-                  icon: Icon(
-                    Icons.light_mode_rounded,
-                    color: theme.text1,
-                  ))
+              // IconButton(
+              //   onPressed: () {
+              //     themeController.toggleTheme();
+              //   },
+              //   icon: Icon(
+              //     Icons.light_mode_rounded,
+              //     color: theme.text1,
+              //   ),
+              // ),
+              ValueListenableBuilder(
+                valueListenable: controller.themeSwitch,
+                builder: (context, value, child) {
+                  return Switch(
+                    value: value,
+                    onChanged: (value) {
+                      controller.themeSwitch.value = value;
+                      themeController.toggleTheme();
+                    },
+                    activeColor: Colors.green, // Color when the switch is ON
+                    inactiveThumbColor:
+                        Colors.black, // Color when the switch is OFF
+                    inactiveTrackColor:
+                        Colors.grey, // Color of the track when OFF
+                  );
+                },
+              )
             ],
           ),
           floatingActionButton: FloatingActionButton(
@@ -56,75 +75,69 @@ class HomePage extends StatelessWidget {
             child: ValueListenableBuilder(
               valueListenable: controller.xFetching,
               builder: (context, value, child) {
-                if (value) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else {
-                  return Column(
-                    children: [
-                      SizedBox(
-                        height: 40,
-                        width: double.infinity,
-                        child: TextField(
-                          controller: controller.txtSearchBar,
-                          keyboardType: TextInputType.name,
-                          textInputAction: TextInputAction.done,
-                          maxLines: 1,
-                          onTapOutside: (event) {
-                            dismissKeyboard();
-                          },
-                          style: TextStyle(color: theme.text1),
-                          cursorColor: theme.text1,
-                          cursorHeight: 18,
-                          cursorWidth: 1.3,
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(
-                              Icons.search_rounded,
-                              color: Colors.grey,
-                            ),
-                            hintText: "Search",
-                            hintStyle: const TextStyle(color: Colors.grey),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                                borderSide: BorderSide.none),
-                            filled: true,
-                            fillColor: theme.background2,
-                            contentPadding:
-                                const EdgeInsets.symmetric(horizontal: 15.0),
+                return Column(
+                  children: [
+                    SizedBox(
+                      height: 40,
+                      width: double.infinity,
+                      child: TextField(
+                        controller: controller.txtSearchBar,
+                        keyboardType: TextInputType.name,
+                        textInputAction: TextInputAction.done,
+                        maxLines: 1,
+                        onTapOutside: (event) {
+                          dismissKeyboard();
+                        },
+                        style: TextStyle(color: theme.text1),
+                        cursorColor: theme.text1,
+                        cursorHeight: 18,
+                        cursorWidth: 1.3,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(
+                            Icons.search_rounded,
+                            color: Colors.grey,
                           ),
+                          hintText: "Search Note",
+                          hintStyle: const TextStyle(color: Colors.grey),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                              borderSide: BorderSide.none),
+                          filled: true,
+                          fillColor: theme.background2,
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 15.0),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Expanded(
-                        child: ValueListenableBuilder(
-                          valueListenable: controller.noteList,
-                          builder: (context, value, child) {
-                            if (value.isEmpty) {
-                              return const Center(
-                                child: Text("No Note Yet!"),
-                              );
-                            } else {
-                              return MasonryGridView.count(
-                                itemCount: value.length, //item count
-                                crossAxisCount: 2, //colum count
-                                mainAxisSpacing: 3,
-                                crossAxisSpacing: 3,
-                                itemBuilder: (context, index) {
-                                  return Tile(
-                                    index: index,
-                                    eachNote: value[index],
-                                    extent: (index % 5 + 1) * 100,
-                                  );
-                                },
-                              );
-                            }
-                          },
-                        ),
-                      )
-                    ],
-                  );
-                }
+                    ),
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: ValueListenableBuilder(
+                        valueListenable: controller.noteList,
+                        builder: (context, value, child) {
+                          if (value.isEmpty) {
+                            return const Center(
+                              child: Text("No Note Yet!"),
+                            );
+                          } else {
+                            return MasonryGridView.count(
+                              itemCount: value.length, //item count
+                              crossAxisCount: 2, //colum count
+                              mainAxisSpacing: 3,
+                              crossAxisSpacing: 3,
+                              itemBuilder: (context, index) {
+                                return Tile(
+                                  index: index,
+                                  eachNote: value[index],
+                                  extent: (index % 5 + 1) * 100,
+                                );
+                              },
+                            );
+                          }
+                        },
+                      ),
+                    )
+                  ],
+                );
               },
             ),
           ),
@@ -149,6 +162,18 @@ class Tile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     HomePageController controller = Get.find();
+    String strHeader = "";
+    String strbody = "";
+
+    List<TextBodyModel> data = controller.getText(eachNote.noteBody);
+    if (data.length > 1) {
+      print(">1");
+      strHeader = data[0].text;
+      strbody = data[1].text;
+    } else {
+      print("else");
+      strHeader = data[0].text;
+    }
     return MaxThemeBuilder(
       builder: (context, theme, themeController) {
         return GestureDetector(
@@ -201,13 +226,15 @@ class Tile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    controller.getText(eachNote.noteBody),
+                    // controller.getText(eachNote.noteBody),
+                    strHeader,
                     maxLines: 1,
                     style: TextStyle(
                         fontWeight: FontWeight.bold, color: theme.text1),
                   ),
                   Text(
-                    controller.getText(eachNote.noteBody),
+                    // controller.getText(eachNote.noteBody),
+                    strbody,
                     maxLines: 3,
                     style: TextStyle(fontSize: 13, color: theme.text1),
                   ),

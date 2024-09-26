@@ -17,9 +17,11 @@ class NoteCreatePage extends StatelessWidget {
           backgroundColor: theme.onBackground,
           appBar: AppBar(
             backgroundColor: theme.onBackground,
-            // iconTheme: IconThemeData(
-            //   color: theme.text1,
-            // ),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                  color: Colors.black),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
             actions: [
               IconButton(
                 onPressed: () {
