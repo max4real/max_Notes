@@ -47,6 +47,23 @@ class HomePageController extends GetxController {
     } catch (e) {}
   }
 
+  Future<void> deleteNote(String noteID) async {
+    String url = "${ApiEndpoint().baseUrl}${ApiEndpoint().noteUrl}/$noteID";
+    GetConnect client = GetConnect(timeout: const Duration(seconds: 10));
+    try {
+      final response = await client.delete(url);
+      if (response.isOk) {
+        Get.back();
+        fetchNote();
+        // String errMessage = response.body["_metadata"]["message"].toString();
+        // Get.snackbar("Successfull", errMessage);
+      } else {
+        String errMessage = response.body["_metadata"]["message"].toString();
+        Get.snackbar("Error", errMessage);
+      }
+    } catch (e) {}
+  }
+
   String getText(String data) {
     Iterable iterable = jsonDecode(data);
     List<TextBodyModel> temp = [];

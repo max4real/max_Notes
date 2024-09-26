@@ -27,7 +27,15 @@ class NoteEditController extends GetxController {
   void onClose() {
     // TODO: implement onClose
     super.onClose();
-    storeContent();
+    checkForNull();
+  }
+
+  void checkForNull() {
+    if (quillController.value.document.isEmpty()) {
+      deleteNote();
+    } else {
+      storeContent();
+    }
   }
 
   void storeContent() {
@@ -42,25 +50,37 @@ class NoteEditController extends GetxController {
     String url = "${ApiEndpoint().baseUrl}${ApiEndpoint().noteUrl}/$noteID";
     GetConnect client = GetConnect(timeout: const Duration(seconds: 10));
 
-    if (quillController.value.document.isEmpty()) {
-    } else {
-      xFecthing.value = true;
-      // Get.dialog(const Center(
-      //   child: CircularProgressIndicator(),
-      // ));
-      try {
-        final response = await client.patch(url, {"text": noteBody.toString()});
-        xFecthing.value = false;
-        // Get.back();
-        if (response.isOk) {
-          // String errMessage = response.body["_metadata"]["message"].toString();
-          // Get.snackbar("Successfull", errMessage);
-        } else {
-          String errMessage = response.body["_metadata"]["message"].toString();
-          Get.snackbar("Error", errMessage);
-        }
-      } catch (e) {}
-    }
+    xFecthing.value = true;
+    // Get.dialog(const Center(
+    //   child: CircularProgressIndicator(),
+    // ));
+    try {
+      final response = await client.patch(url, {"text": noteBody.toString()});
+      xFecthing.value = false;
+      // Get.back();
+      if (response.isOk) {
+        // String errMessage = response.body["_metadata"]["message"].toString();
+        // Get.snackbar("Successfull", errMessage);
+      } else {
+        String errMessage = response.body["_metadata"]["message"].toString();
+        Get.snackbar("Error", errMessage);
+      }
+    } catch (e) {}
+  }
+
+  Future<void> deleteNote() async {
+    String url = "${ApiEndpoint().baseUrl}${ApiEndpoint().noteUrl}/$noteID";
+    GetConnect client = GetConnect(timeout: const Duration(seconds: 10));
+    try {
+      final response = await client.delete(url);
+      if (response.isOk) {
+        // String errMessage = response.body["_metadata"]["message"].toString();
+        // Get.snackbar("Successfull", errMessage);
+      } else {
+        String errMessage = response.body["_metadata"]["message"].toString();
+        Get.snackbar("Error", errMessage);
+      }
+    } catch (e) {}
   }
 
   void loadContent(String noteBody) {

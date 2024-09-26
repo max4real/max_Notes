@@ -18,13 +18,14 @@ class HomePage extends StatelessWidget {
     return MaxThemeBuilder(
       builder: (context, theme, themeController) {
         return Scaffold(
+          backgroundColor: theme.background,
           appBar: AppBar(
             centerTitle: true,
             title: Text(
               'max notes',
               style: TextStyle(color: theme.text1, fontSize: 17),
             ),
-            backgroundColor: theme.secondary,
+            backgroundColor: theme.background2,
             actions: [
               IconButton(
                   onPressed: () {
@@ -39,19 +40,19 @@ class HomePage extends StatelessWidget {
           floatingActionButton: FloatingActionButton(
             onPressed: () {
               Get.to(() => const NoteCreatePage())?.whenComplete(() async {
-                await Future.delayed(const Duration(milliseconds: 300));
+                await Future.delayed(const Duration(milliseconds: 500));
                 controller.initLoad();
               });
             },
             backgroundColor: theme.secondary,
-            child: Icon(
+            child: const Icon(
               Icons.add,
-              color: theme.text1,
+              color: Color(0xFF1E1E1E),
               size: 30,
             ),
           ),
           body: Padding(
-            padding: const EdgeInsets.only(left: 10, right: 10, top: 5),
+            padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
             child: ValueListenableBuilder(
               valueListenable: controller.xFetching,
               builder: (context, value, child) {
@@ -63,7 +64,7 @@ class HomePage extends StatelessWidget {
                   return Column(
                     children: [
                       SizedBox(
-                        height: 50,
+                        height: 40,
                         width: double.infinity,
                         child: TextField(
                           controller: controller.txtSearchBar,
@@ -73,20 +74,28 @@ class HomePage extends StatelessWidget {
                           onTapOutside: (event) {
                             dismissKeyboard();
                           },
+                          style: TextStyle(color: theme.text1),
+                          cursorColor: theme.text1,
+                          cursorHeight: 18,
+                          cursorWidth: 1.3,
                           decoration: InputDecoration(
+                            prefixIcon: const Icon(
+                              Icons.search_rounded,
+                              color: Colors.grey,
+                            ),
                             hintText: "Search",
                             hintStyle: const TextStyle(color: Colors.grey),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25.0),
-                              borderSide: BorderSide.none,
-                            ),
+                                borderRadius: BorderRadius.circular(20.0),
+                                borderSide: BorderSide.none),
                             filled: true,
-                            fillColor: theme.primaryAccent,
+                            fillColor: theme.background2,
                             contentPadding:
                                 const EdgeInsets.symmetric(horizontal: 15.0),
                           ),
                         ),
                       ),
+                      const SizedBox(height: 8),
                       Expanded(
                         child: ValueListenableBuilder(
                           valueListenable: controller.noteList,
@@ -153,9 +162,39 @@ class Tile extends StatelessWidget {
           },
           onLongPress: () {
             //Delete Code
+            Get.defaultDialog(
+              title: "Are you sure?",
+              middleText:
+                  "Do you really want to delete this Note?\nYou will not be able to undo this action.",
+              backgroundColor: theme.background2,
+              titleStyle: const TextStyle(color: Colors.black),
+              middleTextStyle: const TextStyle(color: Colors.black),
+              cancel: SizedBox(
+                height: 40,
+                width: 100,
+                child: ElevatedButton(
+                    onPressed: () {
+                      controller.deleteNote(eachNote.id);
+                    },
+                    child: const Text(
+                      "Delete",
+                      style: TextStyle(color: Colors.redAccent),
+                    )),
+              ),
+              confirm: SizedBox(
+                height: 40,
+                width: 100,
+                child: ElevatedButton(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    child: const Text("Cancel")),
+              ),
+            );
           },
           child: Card(
-            color: theme.secondary,
+            elevation: 4,
+            color: theme.background2,
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
@@ -164,19 +203,19 @@ class Tile extends StatelessWidget {
                   Text(
                     controller.getText(eachNote.noteBody),
                     maxLines: 1,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: theme.text1),
                   ),
                   Text(
                     controller.getText(eachNote.noteBody),
                     maxLines: 3,
-                    style: const TextStyle(
-                        fontSize: 13, color: Color.fromARGB(255, 71, 70, 70)),
+                    style: TextStyle(fontSize: 13, color: theme.text1),
                   ),
                   const SizedBox(height: 10),
                   Text(
                     controller.formatDate(eachNote.createDate
                         .add(const Duration(hours: 6, minutes: 30))),
-                    style: const TextStyle(fontSize: 12),
+                    style: TextStyle(fontSize: 12, color: theme.text1),
                   )
                 ],
               ),

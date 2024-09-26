@@ -21,9 +21,9 @@ class NoteEditPage extends StatelessWidget {
     return MaxThemeBuilder(
       builder: (context, theme, themeController) {
         return Scaffold(
-          backgroundColor: theme.primaryAccent,
+          backgroundColor: theme.onBackground,
           appBar: AppBar(
-            backgroundColor: theme.primaryAccent,
+            backgroundColor: theme.onBackground,
             actions: [
               IconButton(
                 onPressed: () {

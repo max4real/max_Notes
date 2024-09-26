@@ -14,9 +14,12 @@ class NoteCreatePage extends StatelessWidget {
     return MaxThemeBuilder(
       builder: (context, theme, themeController) {
         return Scaffold(
-          backgroundColor: theme.primaryAccent,
+          backgroundColor: theme.onBackground,
           appBar: AppBar(
-            backgroundColor: theme.primaryAccent,
+            backgroundColor: theme.onBackground,
+            // iconTheme: IconThemeData(
+            //   color: theme.text1,
+            // ),
             actions: [
               IconButton(
                 onPressed: () {
@@ -24,7 +27,9 @@ class NoteCreatePage extends StatelessWidget {
                     controller.quillController.value.undo();
                   }
                 },
-                icon: const Icon(Icons.undo_rounded),
+                icon: const Icon(
+                  Icons.undo_rounded,
+                ),
               ),
               IconButton(
                 onPressed: () {
@@ -32,7 +37,9 @@ class NoteCreatePage extends StatelessWidget {
                     controller.quillController.value.redo();
                   }
                 },
-                icon: const Icon(Icons.redo_rounded),
+                icon: const Icon(
+                  Icons.redo_rounded,
+                ),
               ),
             ],
           ),
@@ -60,6 +67,7 @@ class NoteCreatePage extends StatelessWidget {
                 QuillToolbar.simple(
                   controller: controller.quillController.value,
                   configurations: QuillSimpleToolbarConfigurations(
+                    color: Colors.amberAccent,
                     customButtons: [
                       QuillToolbarCustomButtonOptions(
                         tooltip: 'Show Format List',
