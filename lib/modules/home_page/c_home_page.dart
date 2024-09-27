@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:max_notes/_servies/api_endpoint.dart';
-
 import 'package:max_notes/models/m_text_body_model.dart';
 
 import '../../models/m_note_model.dart';
@@ -14,6 +13,9 @@ class HomePageController extends GetxController {
   ValueNotifier<List<NoteModel>> noteList = ValueNotifier([]);
   ValueNotifier<bool> xFetching = ValueNotifier(false);
   ValueNotifier<bool> themeSwitch = ValueNotifier(false);
+  ValueNotifier<bool> selectMode = ValueNotifier(false);
+  ValueNotifier<List<int>> selectedNoteList = ValueNotifier([]);
+
   @override
   void onInit() {
     // TODO: implement onInit
@@ -21,8 +23,23 @@ class HomePageController extends GetxController {
     initLoad();
   }
 
-  void initLoad() {
+  void initLoad() async {
+    await Future.delayed(const Duration(seconds: 1));
     fetchNote();
+  }
+
+  void checkSelect(int index) {
+    bool isSelected = selectedNoteList.value.contains(index);
+
+    if (isSelected) {
+      var temp = [...selectedNoteList.value];
+      temp.remove(index);
+      selectedNoteList.value = List.from(temp);
+    } else {
+      var temp = [...selectedNoteList.value];
+      temp.add(index);
+      selectedNoteList.value = List.from(temp);
+    }
   }
 
   Future<void> fetchNote() async {
@@ -65,6 +82,18 @@ class HomePageController extends GetxController {
         Get.snackbar("Error", errMessage);
       }
     } catch (e) {}
+  }
+
+  void multiDelete() {
+    Get.dialog(const Center(
+      child: CircularProgressIndicator(),
+    ));
+    for (var index in selectedNoteList.value) {
+      String id = noteList.value[index].id;
+      deleteNote(id);
+    }
+    selectMode.value = false;
+    Get.back();
   }
 
   List<TextBodyModel> getText(String data) {
