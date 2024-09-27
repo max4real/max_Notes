@@ -16,6 +16,7 @@ class NoteEditController extends GetxController {
   ValueNotifier<bool> xFecthing = ValueNotifier(false);
 
   String noteBody = "";
+  String sotreNoteBody = "";
 
   @override
   void onInit() {
@@ -43,7 +44,11 @@ class NoteEditController extends GetxController {
     final jsonString = jsonEncode(delta.toJson());
 
     noteBody = jsonString;
-    patchNote();
+    if (sotreNoteBody == noteBody) {
+      //do nothing
+    } else {
+      patchNote();
+    }
   }
 
   Future<void> patchNote() async {
@@ -84,6 +89,7 @@ class NoteEditController extends GetxController {
   }
 
   void loadContent(String noteBody) {
+    sotreNoteBody = noteBody;
     if (noteBody.isNotEmpty) {
       final deltaJson = jsonDecode(noteBody);
       final delta = Delta.fromJson(deltaJson);

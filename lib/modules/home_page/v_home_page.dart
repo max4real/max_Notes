@@ -41,17 +41,18 @@ class HomePage extends StatelessWidget {
                 valueListenable: controller.themeSwitch,
                 builder: (context, value, child) {
                   return Switch(
-                    value: value,
-                    onChanged: (value) {
-                      controller.themeSwitch.value = value;
-                      themeController.toggleTheme();
-                    },
-                    activeColor: Colors.green, // Color when the switch is ON
-                    inactiveThumbColor:
-                        Colors.black, // Color when the switch is OFF
-                    inactiveTrackColor:
-                        Colors.grey, // Color of the track when OFF
-                  );
+                      thumbIcon: MaterialStateProperty.all<Icon>(
+                          const Icon(Icons.dark_mode_rounded)),
+                      value: value,
+                      onChanged: (value) {
+                        controller.themeSwitch.value = value;
+                        themeController.toggleTheme();
+                      },
+                      activeColor:
+                          theme.onBackground, // Color when the switch is ON
+                      inactiveThumbColor: const Color.fromARGB(
+                          255, 58, 58, 58), // Color when the switch is OFF
+                      inactiveTrackColor: theme.background2);
                 },
               )
             ],
@@ -59,7 +60,7 @@ class HomePage extends StatelessWidget {
           floatingActionButton: FloatingActionButton(
             onPressed: () {
               Get.to(() => const NoteCreatePage())?.whenComplete(() async {
-                await Future.delayed(const Duration(milliseconds: 500));
+                await Future.delayed(const Duration(seconds: 1));
                 controller.initLoad();
               });
             },
@@ -115,22 +116,31 @@ class HomePage extends StatelessWidget {
                         valueListenable: controller.noteList,
                         builder: (context, value, child) {
                           if (value.isEmpty) {
-                            return const Center(
-                              child: Text("No Note Yet!"),
+                            return Center(
+                              child: Text(
+                                "No Note Yet!",
+                                style: TextStyle(color: theme.text1),
+                              ),
                             );
                           } else {
-                            return MasonryGridView.count(
-                              itemCount: value.length, //item count
-                              crossAxisCount: 2, //colum count
-                              mainAxisSpacing: 3,
-                              crossAxisSpacing: 3,
-                              itemBuilder: (context, index) {
-                                return Tile(
-                                  index: index,
-                                  eachNote: value[index],
-                                  extent: (index % 5 + 1) * 100,
-                                );
+                            return RefreshIndicator(
+                              onRefresh: () {
+                                return controller.fetchNote();
                               },
+                              child: MasonryGridView.count(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                itemCount: value.length, //item count
+                                crossAxisCount: 2, //colum count
+                                mainAxisSpacing: 3,
+                                crossAxisSpacing: 3,
+                                itemBuilder: (context, index) {
+                                  return Tile(
+                                    index: index,
+                                    eachNote: value[index],
+                                    extent: (index % 5 + 1) * 100,
+                                  );
+                                },
+                              ),
                             );
                           }
                         },
@@ -166,14 +176,14 @@ class Tile extends StatelessWidget {
     String strbody = "";
 
     List<TextBodyModel> data = controller.getText(eachNote.noteBody);
+
     if (data.length > 1) {
-      print(">1");
       strHeader = data[0].text;
       strbody = data[1].text;
     } else {
-      print("else");
       strHeader = data[0].text;
     }
+
     return MaxThemeBuilder(
       builder: (context, theme, themeController) {
         return GestureDetector(
@@ -192,8 +202,8 @@ class Tile extends StatelessWidget {
               middleText:
                   "Do you really want to delete this Note?\nYou will not be able to undo this action.",
               backgroundColor: theme.background2,
-              titleStyle: const TextStyle(color: Colors.black),
-              middleTextStyle: const TextStyle(color: Colors.black),
+              titleStyle: TextStyle(color: theme.text1),
+              middleTextStyle: TextStyle(color: theme.text1),
               cancel: SizedBox(
                 height: 40,
                 width: 100,
