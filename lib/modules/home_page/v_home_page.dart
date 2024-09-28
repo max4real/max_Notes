@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:max_notes/_servies/theme_services/w_custon_theme_builder.dart';
 import 'package:max_notes/models/m_note_model.dart';
@@ -10,9 +11,14 @@ import 'package:max_notes/modules/note_edit/v_note_edit.dart';
 
 import '../../_servies/data_controller.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     HomePageController controller = Get.put(HomePageController());
@@ -36,9 +42,7 @@ class HomePage extends StatelessWidget {
                     controller.selectedNoteList.value.clear();
                   },
                   icon: Icon(
-                      value
-                          ? Icons.delete_forever_rounded
-                          : Icons.delete,
+                      value ? Icons.delete_forever_rounded : Icons.delete,
                       color: value ? Colors.redAccent : Colors.grey),
                 );
               },
@@ -140,30 +144,81 @@ class HomePage extends StatelessWidget {
                                   ),
                                 );
                               } else {
+                                final generatedChildren = List.generate(
+                                  controller.noteList.value.length,
+                                  (index) {
+                                    return Tile(
+                                      key: Key(controller.noteList.value
+                                          .elementAt(index)
+                                          .id),
+                                      index: index,
+                                      eachNote: value[index],
+                                      extent: (index % 5 + 1) * 100,
+                                    );
+                                  },
+                                );
                                 return RefreshIndicator(
                                   onRefresh: () {
                                     return controller.fetchNote();
                                   },
-                                  child: MasonryGridView.count(
-                                    physics:
-                                        const AlwaysScrollableScrollPhysics(),
-                                    itemCount: value.length, //item count
-                                    crossAxisCount: 2, //colum count
-                                    mainAxisSpacing: 3,
-                                    crossAxisSpacing: 3,
-                                    itemBuilder: (context, index) {
-                                      return Tile(
-                                        index: index,
-                                        eachNote: value[index],
-                                        extent: (index % 5 + 1) * 100,
+                                  child: ReorderableBuilder(
+                                    children: generatedChildren,
+                                    scrollController:
+                                        controller.scrollController,
+                                    feedbackScaleFactor: 1,
+                                    onReorder: (ReorderedListFunction
+                                        reorderedListFunction) {
+                                      setState(() {
+                                        controller.noteList.value =
+                                            reorderedListFunction(
+                                                    controller.noteList.value)
+                                                as List<NoteModel>;
+                                      });
+                                    },
+                                    builder: (children) {
+                                      return MasonryGridView(
+                                        key: controller.gridViewKey,
+                                        controller: controller.scrollController,
+                                        children: children,
+                                        gridDelegate:
+                                            const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2,
+                                        ),
                                       );
+                                      // return GridView(
+                                      //   key: controller.gridViewKey,
+                                      //   controller: controller.scrollController,
+                                      //   children: children,
+                                      //   gridDelegate:
+                                      //       const SliverGridDelegateWithFixedCrossAxisCount(
+                                      //         childAspectRatio: 1*0.9,
+                                      //     crossAxisCount: 2,
+                                      //     mainAxisSpacing: 4,
+                                      //     crossAxisSpacing: 4,
+                                      //   ),
+                                      // );
                                     },
                                   ),
+                                  // child: MasonryGridView.count(
+                                  //   physics:
+                                  //       const AlwaysScrollableScrollPhysics(),
+                                  //   itemCount: value.length, //item count
+                                  //   crossAxisCount: 2, //colum count
+                                  //   mainAxisSpacing: 3,
+                                  //   crossAxisSpacing: 3,
+                                  //   itemBuilder: (context, index) {
+                                  //     return Tile(
+                                  //       index: index,
+                                  //       eachNote: value[index],
+                                  //       extent: (index % 5 + 1) * 100,
+                                  //     );
+                                  //   },
+                                  // ),
                                 );
                               }
                             },
                           ),
-                        )
+                        ),
                       ],
                     ),
                     Visibility(
@@ -276,6 +331,7 @@ class Tile extends StatelessWidget {
                 builder: (context, value, child) {
                   bool isSelected = value.contains(index);
                   return Card(
+                    shadowColor: theme.background,
                     elevation: 4,
                     color: theme.background2,
                     child: Stack(

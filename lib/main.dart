@@ -24,30 +24,6 @@ class MyApp extends StatelessWidget {
       fallbackLocale: const Locale('en', 'US'),
       theme: ThemeData(
         useMaterial3: true,
-        // primarySwatch: MaterialColor(
-        //     themeController.currentTheme.value.primary.value, const {
-        //   050: Color.fromRGBO(29, 44, 77, .1),
-        //   100: Color.fromRGBO(29, 44, 77, .2),
-        //   200: Color.fromRGBO(29, 44, 77, .3),
-        //   300: Color.fromRGBO(29, 44, 77, .4),
-        //   400: Color.fromRGBO(29, 44, 77, .5),
-        //   500: Color.fromRGBO(29, 44, 77, .6),
-        //   600: Color.fromRGBO(29, 44, 77, .7),
-        //   700: Color.fromRGBO(29, 44, 77, .8),
-        //   800: Color.fromRGBO(29, 44, 77, .9),
-        //   900: Color.fromRGBO(29, 44, 77, 1),
-        // }),
-        // fontFamily: 'Nunito',
-        // fontFamilyFallback: const ['Book'],
-        // textTheme: TextTheme(
-        //   bodyMedium: AppConstants.defaultTextStyle,
-        //   titleMedium: AppConstants.defaultTextStyle,
-        //   labelLarge: AppConstants.defaultTextStyle,
-        //   bodyLarge: AppConstants.defaultTextStyle,
-        //   bodySmall: AppConstants.defaultTextStyle,
-        //   titleLarge: AppConstants.defaultTextStyle,
-        //   titleSmall: AppConstants.defaultTextStyle,
-        // ),
       ),
       home: const HomePage(),
     );

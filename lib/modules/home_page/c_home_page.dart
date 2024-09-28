@@ -16,6 +16,9 @@ class HomePageController extends GetxController {
   ValueNotifier<bool> selectMode = ValueNotifier(false);
   ValueNotifier<List<int>> selectedNoteList = ValueNotifier([]);
 
+  final scrollController = ScrollController();
+  final gridViewKey = GlobalKey();
+
   @override
   void onInit() {
     // TODO: implement onInit
