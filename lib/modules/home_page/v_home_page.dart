@@ -294,38 +294,6 @@ class Tile extends StatelessWidget {
                   });
                 }
               },
-              // onLongPress: () {
-              //   //Delete Code
-              //   Get.defaultDialog(
-              //     title: "Are you sure?",
-              //     middleText:
-              //         "Do you really want to delete this Note?\nYou will not be able to undo this action.",
-              //     backgroundColor: theme.background2,
-              //     titleStyle: TextStyle(color: theme.text1),
-              //     middleTextStyle: TextStyle(color: theme.text1),
-              //     cancel: SizedBox(
-              //       height: 40,
-              //       width: 100,
-              //       child: ElevatedButton(
-              //           onPressed: () {
-              //             controller.deleteNote(eachNote.id);
-              //           },
-              //           child: const Text(
-              //             "Delete",
-              //             style: TextStyle(color: Colors.redAccent),
-              //           )),
-              //     ),
-              //     confirm: SizedBox(
-              //       height: 40,
-              //       width: 100,
-              //       child: ElevatedButton(
-              //           onPressed: () {
-              //             Get.back();
-              //           },
-              //           child: const Text("Cancel")),
-              //     ),
-              //   );
-              // },
               child: ValueListenableBuilder(
                 valueListenable: controller.selectedNoteList,
                 builder: (context, value, child) {
