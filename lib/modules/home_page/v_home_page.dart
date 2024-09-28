@@ -110,6 +110,9 @@ class _HomePageState extends State<HomePage> {
                             onTapOutside: (event) {
                               dismissKeyboard();
                             },
+                            onChanged: (value) {
+                              controller.searchGuest();
+                            },
                             style: TextStyle(color: theme.text1),
                             cursorColor: theme.text1,
                             cursorHeight: 18,
@@ -134,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                         const SizedBox(height: 8),
                         Expanded(
                           child: ValueListenableBuilder(
-                            valueListenable: controller.noteList,
+                            valueListenable: controller.noteFilterList,
                             builder: (context, value, child) {
                               if (value.isEmpty) {
                                 return Center(
@@ -145,10 +148,10 @@ class _HomePageState extends State<HomePage> {
                                 );
                               } else {
                                 final generatedChildren = List.generate(
-                                  controller.noteList.value.length,
+                                  controller.noteFilterList.value.length,
                                   (index) {
                                     return Tile(
-                                      key: Key(controller.noteList.value
+                                      key: Key(controller.noteFilterList.value
                                           .elementAt(index)
                                           .id),
                                       index: index,
@@ -169,10 +172,10 @@ class _HomePageState extends State<HomePage> {
                                     onReorder: (ReorderedListFunction
                                         reorderedListFunction) {
                                       setState(() {
-                                        controller.noteList.value =
-                                            reorderedListFunction(
-                                                    controller.noteList.value)
-                                                as List<NoteModel>;
+                                        controller.noteFilterList
+                                            .value = reorderedListFunction(
+                                                controller.noteFilterList.value)
+                                            as List<NoteModel>;
                                       });
                                     },
                                     builder: (children) {

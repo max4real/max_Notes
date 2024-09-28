@@ -11,6 +11,7 @@ import '../../models/m_note_model.dart';
 class HomePageController extends GetxController {
   TextEditingController txtSearchBar = TextEditingController(text: "");
   ValueNotifier<List<NoteModel>> noteList = ValueNotifier([]);
+  ValueNotifier<List<NoteModel>> noteFilterList = ValueNotifier([]);
   ValueNotifier<bool> xFetching = ValueNotifier(false);
   ValueNotifier<bool> themeSwitch = ValueNotifier(false);
   ValueNotifier<bool> selectMode = ValueNotifier(false);
@@ -63,6 +64,7 @@ class HomePageController extends GetxController {
         }
         temp.sort((a, b) => b.createDate.compareTo(a.createDate));
         noteList.value = temp;
+        noteFilterList.value = noteList.value;
       } else {
         String errMessage = response.body["_metadata"]["message"].toString();
         Get.snackbar("Error", errMessage);
@@ -134,5 +136,22 @@ class HomePageController extends GetxController {
 
   String _twoDigits(int n) {
     return n.toString().padLeft(2, '0');
+  }
+
+  ////----------Search------------////
+  void searchGuest() {
+    if (txtSearchBar.text.isNotEmpty) {
+      filterByBody();
+    } else {
+      noteFilterList.value = noteList.value;
+    }
+  }
+
+  void filterByBody() {
+    List<NoteModel> temp = [];
+    temp = noteList.value.where((test) {
+      return test.noteBody.isCaseInsensitiveContains(txtSearchBar.text);
+    }).toList();
+    noteFilterList.value = temp;
   }
 }
