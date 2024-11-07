@@ -75,8 +75,7 @@ class _HomePageState extends State<HomePage> {
                 visible: !mode,
                 child: FloatingActionButton(
                   onPressed: () {
-                    Get.to(() => const NoteCreatePage())
-                        ?.whenComplete(() async {
+                    Get.to(() => const NoteCreatePage())?.whenComplete(() {
                       controller.initLoad();
                     });
                   },
@@ -333,9 +332,8 @@ class Tile extends StatelessWidget {
                                   SizedBox(
                                     width: 100,
                                     child: Text(
-                                      controller.formatDate(eachNote.createDate
-                                          .add(const Duration(
-                                              hours: 6, minutes: 30))),
+                                      controller
+                                          .formatDate(eachNote.createDate),
                                       style: TextStyle(
                                           fontSize: 12, color: theme.text1),
                                     ),

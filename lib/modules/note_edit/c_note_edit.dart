@@ -5,7 +5,7 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_quill/quill_delta.dart';
 import 'package:get/get.dart';
 
-import '../../_servies/api_endpoint.dart';
+import '../../_servies/database_helper.dart';
 
 class NoteEditController extends GetxController {
   late String noteID;
@@ -52,40 +52,50 @@ class NoteEditController extends GetxController {
   }
 
   Future<void> patchNote() async {
-    String url = "${ApiEndpoint().baseUrl}${ApiEndpoint().noteUrl}/$noteID";
-    GetConnect client = GetConnect(timeout: const Duration(seconds: 10));
+    final dbHelper = DatabaseHelper();
 
-    xFecthing.value = true;
-    // Get.dialog(const Center(
-    //   child: CircularProgressIndicator(),
-    // ));
-    try {
-      final response = await client.patch(url, {"text": noteBody.toString()});
-      xFecthing.value = false;
-      // Get.back();
-      if (response.isOk) {
-        // String errMessage = response.body["_metadata"]["message"].toString();
-        // Get.snackbar("Successfull", errMessage);
-      } else {
-        String errMessage = response.body["_metadata"]["message"].toString();
-        Get.snackbar("Error", errMessage);
+    if (quillController.value.document.isEmpty()) {
+      //do nothing
+    } else {
+      try {
+        await dbHelper.updateItem(
+          id: int.parse(noteID),
+          body: noteBody,
+          createdAt: DateTime.now().toIso8601String(),
+        );
+        print("Item updated successfully!");
+      } catch (e) {
+        Get.snackbar("Error", e.toString());
       }
-    } catch (e) {}
+    }
+    // String url = "${ApiEndpoint().baseUrl}${ApiEndpoint().noteUrl}/$noteID";
+    // GetConnect client = GetConnect(timeout: const Duration(seconds: 10));
+
+    // xFecthing.value = true;
+    // // Get.dialog(const Center(
+    // //   child: CircularProgressIndicator(),
+    // // ));
+    // try {
+    //   final response = await client.patch(url, {"text": noteBody.toString()});
+    //   xFecthing.value = false;
+    //   // Get.back();
+    //   if (response.isOk) {
+    //     // String errMessage = response.body["_metadata"]["message"].toString();
+    //     // Get.snackbar("Successfull", errMessage);
+    //   } else {
+    //     String errMessage = response.body["_metadata"]["message"].toString();
+    //     Get.snackbar("Error", errMessage);
+    //   }
+    // } catch (e) {}
   }
 
   Future<void> deleteNote() async {
-    String url = "${ApiEndpoint().baseUrl}${ApiEndpoint().noteUrl}/$noteID";
-    GetConnect client = GetConnect(timeout: const Duration(seconds: 10));
+    final dbHelper = DatabaseHelper();
     try {
-      final response = await client.delete(url);
-      if (response.isOk) {
-        // String errMessage = response.body["_metadata"]["message"].toString();
-        // Get.snackbar("Successfull", errMessage);
-      } else {
-        String errMessage = response.body["_metadata"]["message"].toString();
-        Get.snackbar("Error", errMessage);
-      }
-    } catch (e) {}
+      await dbHelper.deleteItem(int.parse(noteID));
+    } catch (e) {
+      print(e);
+    }
   }
 
   void loadContent(String noteBody) {

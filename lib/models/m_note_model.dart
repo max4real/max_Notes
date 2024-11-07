@@ -10,7 +10,7 @@ class NoteModel {
       id: data["id"].toString(),
       createDate:
           DateTime.tryParse(data["createdAt"].toString()) ?? DateTime.now(),
-      noteBody: data["text"].toString(),
+      noteBody: data["body"].toString(),
     );
   }
 }

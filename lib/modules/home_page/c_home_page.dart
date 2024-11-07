@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:max_notes/_servies/api_endpoint.dart';
+import 'package:max_notes/_servies/database_helper.dart';
 import 'package:max_notes/models/m_text_body_model.dart';
 
 import '../../models/m_note_model.dart';
@@ -28,7 +28,7 @@ class HomePageController extends GetxController {
   }
 
   void initLoad() async {
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(milliseconds: 500));
     fetchNote();
   }
 
@@ -46,47 +46,35 @@ class HomePageController extends GetxController {
     }
   }
 
+//  [{id: 1, body: [{"insert":"hello\n"}], createdAt: 2024-11-06T17:08:21.517068},
+//   {id: 2, body: [{"insert":"heyy\n"}], createdAt: 2024-11-06T17:08:51.399161},
+//   {id: 3, body: [{"insert":"hi\n"}], createdAt: 2024-11-06T17:12:35.942892},
+//   {id: 4, body: [{"insert":"hi\n"}], createdAt: 2024-11-06T17:12:56.512816}]
   Future<void> fetchNote() async {
-    String url = ApiEndpoint().baseUrl + ApiEndpoint().noteUrl;
-    GetConnect client = GetConnect(timeout: const Duration(seconds: 10));
-    xFetching.value = true;
-
+    final dbHelper = DatabaseHelper();
     try {
-      final response = await client.get(url);
-      xFetching.value = false;
-
-      if (response.isOk) {
-        Iterable iterable = response.body["_data"] ?? [];
-        List<NoteModel> temp = [];
-        for (var element in iterable) {
-          NoteModel data = NoteModel.fromApi(data: element);
-          temp.add(data);
-        }
-        temp.sort((a, b) => b.createDate.compareTo(a.createDate));
-        noteList.value = temp;
-        noteFilterList.value = noteList.value;
-      } else {
-        String errMessage = response.body["_metadata"]["message"].toString();
-        Get.snackbar("Error", errMessage);
+      final response = await dbHelper.getItems();
+      Iterable iterable = response;
+      List<NoteModel> temp = [];
+      for (var element in iterable) {
+        NoteModel data = NoteModel.fromApi(data: element);
+        temp.add(data);
       }
-    } catch (e) {}
+      temp.sort((a, b) => b.createDate.compareTo(a.createDate));
+      noteList.value = temp;
+      noteFilterList.value = noteList.value;
+    } catch (e) {
+      Get.snackbar("Error", e.toString());
+    }
   }
 
   Future<void> deleteNote(String noteID) async {
-    String url = "${ApiEndpoint().baseUrl}${ApiEndpoint().noteUrl}/$noteID";
-    GetConnect client = GetConnect(timeout: const Duration(seconds: 10));
+    final dbHelper = DatabaseHelper();
     try {
-      final response = await client.delete(url);
-      if (response.isOk) {
-        Get.back();
-        fetchNote();
-        // String errMessage = response.body["_metadata"]["message"].toString();
-        // Get.snackbar("Successfull", errMessage);
-      } else {
-        String errMessage = response.body["_metadata"]["message"].toString();
-        Get.snackbar("Error", errMessage);
-      }
-    } catch (e) {}
+      await dbHelper.deleteItem(int.parse(noteID));
+    } catch (e) {
+      print(e);
+    }
   }
 
   void multiDelete() {
@@ -97,6 +85,7 @@ class HomePageController extends GetxController {
       String id = noteList.value[index].id;
       deleteNote(id);
     }
+    fetchNote();
     selectMode.value = false;
     Get.back();
   }

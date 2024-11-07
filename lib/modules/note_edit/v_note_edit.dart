@@ -16,7 +16,7 @@ class NoteEditPage extends StatelessWidget {
     NoteEditController controller = Get.put(NoteEditController());
     controller.noteID = eachNote.id;
     controller.createDate =
-        eachNote.createDate.add(const Duration(hours: 6, minutes: 30));
+        eachNote.createDate;
     controller.loadContent(eachNote.noteBody);
     return MaxThemeBuilder(
       builder: (context, theme, themeController) {
